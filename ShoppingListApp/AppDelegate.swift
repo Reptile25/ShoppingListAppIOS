@@ -77,7 +77,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("File Already Exist At:\(dbPath)")
         }
     }
-
-
 }
-
