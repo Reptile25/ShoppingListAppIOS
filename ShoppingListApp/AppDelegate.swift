@@ -13,9 +13,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
+    var shoppingArray:[Shopping] = []
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        Colour.sharedInstance.selectedColour = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
+        copyDatabase()
         return true
     }
 
@@ -39,6 +42,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    func getDBPath() -> String{
+        let paths = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
+        let documentsDir = paths[0]
+        let databasePath = (documentsDir as NSString).appendingPathComponent("shoppingList.db")
+        return databasePath
+    }
+    
+    func copyDatabase(){
+        let fileManager = FileManager.default
+        let dbPath = getDBPath()
+        var success = fileManager.fileExists(atPath: dbPath)
+        
+        if(!success){
+            if let defaultDBPath = Bundle.main.path(forResource: "shoppingList", ofType: "db"){
+                var error: NSError?
+                do{
+                    try fileManager.copyItem(atPath: defaultDBPath, toPath: dbPath)
+                    success = true
+                } catch let error1 as NSError {
+                    error = error1
+                    success = false
+                }
+                print(defaultDBPath)
+                if(!success){
+                    print("Failed to create writable database file with message\(error!.localizedDescription))")
+                }
+            }else {
+                print("Cannot find file in NSBundle")
+            }
+        } else {
+            print("File Already Exist At:\(dbPath)")
+        }
     }
 
 
